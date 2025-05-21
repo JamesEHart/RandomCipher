@@ -1,7 +1,7 @@
 # ---------- ENCODE TEXT -----------
 # python .\combined.py encode "[text to be encoded]" [0-16]
 # ---------- DECODE IMAGE ----------
-# python .\combined.py decode encoded_image.png
+# python .\combined.py decode encoded_image.png [--key 0-15]
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -12,12 +12,12 @@ import math
 import datetime
 
 METHOD_COLORS = [
-    (1, 0, 0),         
-    (0, 1, 0),         
-    (0, 0, 1),         
-    (1, 1, 0),         
-    (1, 0, 1),         
-    (0, 1, 1),         
+    (1, 0, 0),
+    (0, 1, 0),
+    (0, 0, 1),
+    (1, 1, 0),
+    (1, 0, 1),
+    (0, 1, 1),
     (0.5, 0, 0),
     (0, 0.5, 0),
     (0, 0, 0.5),
@@ -104,32 +104,17 @@ def closest_method_color(rgb):
     distances = [dist(rgb, color) for color in METHOD_COLORS]
     return distances.index(min(distances))
 
-def decode_method_0(rgb):
-    val = round(rgb[0] * 255)
-    return chr(val)
-
-def decode_method_1(rgb):
-    val = round(rgb[0] * 255)
-    return chr(val)
-
-def decode_method_2(rgb):
-    val = round(rgb[1] * 255)
-    return chr(val)
-
-def decode_method_3(rgb):
-    val = round(rgb[2] * 255)
-    return chr(val)
-
+def decode_method_0(rgb): return chr(round(rgb[0] * 255))
+def decode_method_1(rgb): return chr(round(rgb[0] * 255))
+def decode_method_2(rgb): return chr(round(rgb[1] * 255))
+def decode_method_3(rgb): return chr(round(rgb[2] * 255))
 def decode_method_4(rgb):
     r = (round(rgb[0] * 255) >> 5) & 0x07
     g = (round(rgb[1] * 255) >> 5) & 0x07
     b = (round(rgb[2] * 255) >> 6) & 0x03
     code = (r << 5) + (g << 2) + b
     return chr(code)
-
-def decode_method_5(rgb):
-    val = 255 - round(rgb[0] * 255)
-    return chr(val)
+def decode_method_5(rgb): return chr(255 - round(rgb[0] * 255))
 
 DECODING_METHODS = [
     decode_method_0,
@@ -140,7 +125,7 @@ DECODING_METHODS = [
     decode_method_5,
 ] * 3
 
-def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
+def decode_image_from_tiles(image_path, cell_size=cellSize, border=1, method_override=None):
     img = Image.open(image_path).convert("RGB")
     width, height = img.size
 
@@ -149,12 +134,16 @@ def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
 
     cx = cell_size // 2
     cy = cell_size // 2
-    method_rgb_int = img.getpixel((cx, cy))
-    method_rgb = tuple(channel / 255 for channel in method_rgb_int)
-    method_idx = closest_method_color(method_rgb)
 
-    print(f"Detected encoding method: {method_idx} - {METHOD_NAMES[method_idx]}")
-    print(f"Method color (normalized): {method_rgb}")
+    if method_override is not None:
+        method_idx = method_override
+        print(f"Using manually provided encoding method: {method_idx} - {METHOD_NAMES[method_idx]}")
+    else:
+        method_rgb_int = img.getpixel((cx, cy))
+        method_rgb = tuple(channel / 255 for channel in method_rgb_int)
+        method_idx = closest_method_color(method_rgb)
+        print(f"Detected encoding method: {method_idx} - {METHOD_NAMES[method_idx]}")
+        print(f"Method color (normalized): {method_rgb}")
 
     decode_fn = DECODING_METHODS[method_idx]
     decoded_chars = []
@@ -173,7 +162,6 @@ def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
                 continue
 
             rgb = img.getpixel((px, py))
-
             if rgb == (255, 255, 255):
                 continue
 
@@ -197,6 +185,7 @@ def main():
     decode_parser = subparsers.add_parser('decode', help='Decode message from encoded image')
     decode_parser.add_argument('image', help='Path to encoded tile image')
     decode_parser.add_argument('--cell', type=int, default=cellSize, help='Tile cell size including border')
+    decode_parser.add_argument('--key', type=int, choices=range(0, 16), help='Optional method index override (0-15)')
 
     args = parser.parse_args()
 
@@ -214,7 +203,7 @@ def main():
         plt.close(fig)
 
     elif args.command == 'decode':
-        message = decode_image_from_tiles(args.image, cell_size=args.cell)
+        message = decode_image_from_tiles(args.image, cell_size=args.cell, method_override=args.key)
         print("\nDecoded message:\n", message)
 
 if __name__ == "__main__":
