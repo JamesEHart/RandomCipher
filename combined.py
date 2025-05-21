@@ -95,6 +95,11 @@ def plot_color_grid_with_method(rgb_list, method_idx, cols=8, border_color='blac
                                    edgecolor=border_color, linewidth=border_width)
         ax.add_patch(square)
 
+        # Add key number label in the center of the first square
+        if idx == 0:
+            ax.text(col + 0.5, row + 0.5, str(method_idx), color='white',
+                    ha='center', va='center', fontsize=16, weight='bold')
+
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     return fig
 
