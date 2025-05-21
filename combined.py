@@ -49,7 +49,7 @@ METHOD_NAMES = [
     "Blue Gradient",
 ]
 
-cellSize = 100
+cellSize = 64
 
 def encode_method_0(c): val = ord(c) / 255; return (val, val, val)
 def encode_method_1(c): val = ord(c) / 255; return (val, 0, 0)
