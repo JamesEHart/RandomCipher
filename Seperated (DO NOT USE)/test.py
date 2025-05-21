@@ -5,22 +5,22 @@ import math
 cellSize = int(100)
 
 METHOD_COLORS = [
-    (1, 0, 0),         # Red
-    (0, 1, 0),         # Green
-    (0, 0, 1),         # Blue
-    (1, 1, 0),         # Yellow
-    (1, 0, 1),         # Magenta
-    (0, 1, 1),         # Cyan
-    (0.5, 0, 0),       # Dark Red
-    (0, 0.5, 0),       # Dark Green
-    (0, 0, 0.5),       # Dark Blue
-    (0.5, 0.5, 0),     # Olive
-    (0.5, 0, 0.5),     # Purple
-    (0, 0.5, 0.5),     # Teal
-    (0.25, 0.25, 0.25),# Dark Gray
-    (0.75, 0.75, 0.75),# Light Gray
-    (1, 0.5, 0),       # Orange
-    (0, 0.5, 1),       # Sky Blue
+    (1, 0, 0),         
+    (0, 1, 0),         
+    (0, 0, 1),         
+    (1, 1, 0),         
+    (1, 0, 1),         
+    (0, 1, 1),         
+    (0.5, 0, 0),        
+    (0, 0.5, 0),        
+    (0, 0, 0.5),        
+    (0.5, 0.5, 0),     
+    (0.5, 0, 0.5),     
+    (0, 0.5, 0.5),     
+    (0.25, 0.25, 0.25), 
+    (0.75, 0.75, 0.75), 
+    (1, 0.5, 0),       
+    (0, 0.5, 1),        
 ]
 
 METHOD_NAMES = [
@@ -43,13 +43,11 @@ METHOD_NAMES = [
 ]
 
 def closest_method_color(rgb):
-    # Input `rgb` is normalized (0-1 floats)
     def dist(c1, c2):
         return math.sqrt(sum((a - b) ** 2 for a, b in zip(c1, c2)))
     distances = [dist(rgb, color) for color in METHOD_COLORS]
     return distances.index(min(distances))
 
-# Decoding methods — now using ROUNDING instead of truncation
 def decode_method_0(rgb):
     val = round(rgb[0] * 255)
     return chr(val)
@@ -84,7 +82,7 @@ DECODING_METHODS = [
     decode_method_3,
     decode_method_4,
     decode_method_5,
-] * 3  # Repeat to get 18 (at least 16)
+] * 3
 
 def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
     img = Image.open(image_path).convert("RGB")
@@ -93,7 +91,6 @@ def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
     cols = width // cell_size
     rows = height // cell_size
 
-    # Detect method color from top-left tile (in float normalized RGB)
     cx = cell_size // 2
     cy = cell_size // 2
     method_rgb_int = img.getpixel((cx, cy))
@@ -122,14 +119,14 @@ def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
             rgb = img.getpixel((px, py))
 
             if rgb == (255, 255, 255):
-                continue  # skip white padding
+                continue
 
             norm_rgb = tuple(channel / 255 for channel in rgb)
 
             try:
                 decoded_chars.append(decode_fn(norm_rgb))
             except Exception:
-                decoded_chars.append('�')  # fallback char
+                decoded_chars.append('�')
 
     return ''.join(decoded_chars)
 

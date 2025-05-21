@@ -12,22 +12,22 @@ import math
 import datetime
 
 METHOD_COLORS = [
-    (1, 0, 0),         # Red
-    (0, 1, 0),         # Green
-    (0, 0, 1),         # Blue
-    (1, 1, 0),         # Yellow
-    (1, 0, 1),         # Magenta
-    (0, 1, 1),         # Cyan
-    (0.5, 0, 0),       # Dark Red
-    (0, 0.5, 0),       # Dark Green
-    (0, 0, 0.5),       # Dark Blue
-    (0.5, 0.5, 0),     # Olive
-    (0.5, 0, 0.5),     # Purple
-    (0, 0.5, 0.5),     # Teal
-    (0.25, 0.25, 0.25),# Dark Gray
-    (0.75, 0.75, 0.75),# Light Gray
-    (1, 0.5, 0),       # Orange
-    (0, 0.5, 1),       # Sky Blue
+    (1, 0, 0),         
+    (0, 1, 0),         
+    (0, 0, 1),         
+    (1, 1, 0),         
+    (1, 0, 1),         
+    (0, 1, 1),         
+    (0.5, 0, 0),
+    (0, 0.5, 0),
+    (0, 0, 0.5),
+    (0.5, 0.5, 0),
+    (0.5, 0, 0.5),
+    (0, 0.5, 0.5),
+    (0.25, 0.25, 0.25),
+    (0.75, 0.75, 0.75),
+    (1, 0.5, 0),
+    (0, 0.5, 1),
 ]
 
 METHOD_NAMES = [
@@ -51,7 +51,6 @@ METHOD_NAMES = [
 
 cellSize = 100
 
-# Encoding functions
 def encode_method_0(c): val = ord(c) / 255; return (val, val, val)
 def encode_method_1(c): val = ord(c) / 255; return (val, 0, 0)
 def encode_method_2(c): val = ord(c) / 255; return (0, val, 0)
@@ -78,7 +77,7 @@ def encode_string_with_method(s, method_idx):
     return [encode_fn(c) for c in s]
 
 def plot_color_grid_with_method(rgb_list, method_idx, cols=8, border_color='black', border_width=1):
-    rgb_list = [METHOD_COLORS[method_idx]] + rgb_list  # Add method ID square
+    rgb_list = [METHOD_COLORS[method_idx]] + rgb_list
     total = len(rgb_list)
     rows = (total + cols - 1) // cols
 
@@ -97,9 +96,8 @@ def plot_color_grid_with_method(rgb_list, method_idx, cols=8, border_color='blac
         ax.add_patch(square)
 
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    return fig  # Return figure instead of showing
+    return fig
 
-# Decoding helpers
 def closest_method_color(rgb):
     def dist(c1, c2):
         return math.sqrt(sum((a - b) ** 2 for a, b in zip(c1, c2)))
@@ -177,14 +175,14 @@ def decode_image_from_tiles(image_path, cell_size=cellSize, border=1):
             rgb = img.getpixel((px, py))
 
             if rgb == (255, 255, 255):
-                continue  # skip white padding
+                continue
 
             norm_rgb = tuple(channel / 255 for channel in rgb)
 
             try:
                 decoded_chars.append(decode_fn(norm_rgb))
             except Exception:
-                decoded_chars.append('�')  # fallback char
+                decoded_chars.append('�')
 
     return ''.join(decoded_chars)
 

@@ -35,7 +35,7 @@ def encode_string_with_method(s, method_idx):
     return [encode_fn(c) for c in s]
 
 def plot_color_grid_with_method(rgb_list, method_idx, cols=8, border_color='black', border_width=1):
-    rgb_list = [METHOD_COLORS[method_idx]] + rgb_list  # Add method ID square
+    rgb_list = [METHOD_COLORS[method_idx]] + rgb_list
     total = len(rgb_list)
     rows = (total + cols - 1) // cols
 
@@ -56,7 +56,6 @@ def plot_color_grid_with_method(rgb_list, method_idx, cols=8, border_color='blac
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     plt.show()
 
-# Example usage
 input_string = input()
 method_index = int(input())
 if method_index == 16:
