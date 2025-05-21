@@ -1,5 +1,5 @@
 # ---------- ENCODE TEXT -----------
-# python .\combined.py encode "[text to be encoded]" [0-16]
+# python .\combined.py encode "[text to be encoded]" [0-15]
 # ---------- DECODE IMAGE ----------
 # python .\combined.py decode encoded_image.png [--key 0-15]
 
